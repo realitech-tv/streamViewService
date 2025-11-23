@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/response.schema.json",
+  "title": "streamViewService API Response Schema",
+  "type": "object",
+  "properties": {
+    "streamtype": {
+      "type": "string",
+      "enum": ["hls", "dash", "invalid"],
+      "description": "The type of the stream"
+    }
+  },
+  "required": ["streamtype"]
+}
