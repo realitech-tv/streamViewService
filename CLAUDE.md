@@ -23,11 +23,52 @@ This application is being built incrementally using Claude Code's Planning Mode.
 3. Design the API structure to support self-documentation
 4. Plan for testability at both unit and integration levels
 
-## Implementation Considerations
+## Architecture
 
-When building this service, keep in mind:
+**Technology Stack:**
+- Spring Boot 3.2.0
+- Java 17
+- Maven for build management
+- Springdoc OpenAPI for API documentation
+- Docker for containerization
 
-- The service will parse video manifest files (likely HLS/DASH formats)
-- Response format is JSON
-- The web UI should be simple and static (no complex frontend framework needed)
-- All components must work within a containerized environment
+**Key Components:**
+- `ManifestController`: REST API endpoint at POST /
+- `HealthController`: Health check endpoint at GET /health
+- `ManifestAnalyzerImpl`: Service for detecting HLS (.m3u8) and DASH (.mpd) manifests
+- Static Web UI at /
+- OpenAPI documentation at /apidocs
+
+## Development Commands
+
+**Build and test:**
+```bash
+mvn clean test           # Run all tests
+mvn clean install        # Build JAR file
+```
+
+**Run locally:**
+```bash
+mvn spring-boot:run      # Start on port 8080
+```
+
+**Docker:**
+```bash
+docker build -t streamviewservice:latest .
+docker run -p 8080:8080 streamviewservice:latest
+```
+
+## API Endpoints
+
+- `POST /` - Analyze manifest URL, returns JSON with streamtype (hls, dash, or invalid)
+- `GET /health` - Health check
+- `GET /apidocs` - API documentation (Swagger UI)
+- `GET /` - Static web UI for testing
+
+## Testing
+
+The test suite includes:
+- Unit tests for controllers (5 tests)
+- Unit tests for service layer (8 tests)
+- All tests validate HLS, DASH, and invalid manifest handling
+- Test data available in `src/test/resources/test-manifests.json`
