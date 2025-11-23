@@ -4,20 +4,20 @@ import java.util.List;
 
 public class HlsDetails {
 
-    private List<Long> variants;
+    private List<Variant> variants;
 
     public HlsDetails() {
     }
 
-    public HlsDetails(List<Long> variants) {
+    public HlsDetails(List<Variant> variants) {
         this.variants = variants;
     }
 
-    public List<Long> getVariants() {
+    public List<Variant> getVariants() {
         return variants;
     }
 
-    public void setVariants(List<Long> variants) {
+    public void setVariants(List<Variant> variants) {
         this.variants = variants;
     }
 }

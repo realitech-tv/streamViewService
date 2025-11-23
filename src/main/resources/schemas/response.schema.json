@@ -15,12 +15,31 @@
         "variants": {
           "type": "array",
           "items": {
-            "type": "number"
+            "type": "object",
+            "properties": {
+              "bandwidth": {
+                "type": "number",
+                "description": "Bitrate in bits per second"
+              },
+              "codec": {
+                "type": "string",
+                "description": "Codec information"
+              },
+              "resolution": {
+                "type": "string",
+                "description": "Video resolution"
+              },
+              "uri": {
+                "type": "string",
+                "description": "Child manifest URI for this variant level"
+              }
+            },
+            "required": ["bandwidth"]
           },
-          "description": "List of bitrate levels from the manifest"
+          "description": "List of variant streams from the manifest"
         }
       },
-      "description": "HLS stream details (to be completed)"
+      "description": "HLS stream details"
     },
     "dash": {
       "type": "object",

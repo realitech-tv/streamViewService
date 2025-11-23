@@ -2,6 +2,7 @@ package com.realitech.streamviewservice.controller;
 
 import com.realitech.streamviewservice.dto.HlsDetails;
 import com.realitech.streamviewservice.dto.ManifestResponse;
+import com.realitech.streamviewservice.dto.Variant;
 import com.realitech.streamviewservice.service.ManifestAnalyzer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,11 @@ class ManifestControllerTest {
     @Test
     void testAnalyzeManifestWithValidUrl() throws Exception {
         String requestBody = "{\"url\":\"https://example.com/test.m3u8\"}";
-        HlsDetails hlsDetails = new HlsDetails(Arrays.asList(1000000L, 2000000L, 5000000L));
+        HlsDetails hlsDetails = new HlsDetails(Arrays.asList(
+                new Variant(1000000L, "avc1.42c01e,mp4a.40.2", "640x360", "variant-360p.m3u8"),
+                new Variant(2000000L, "avc1.42c01f,mp4a.40.2", "1280x720", "variant-720p.m3u8"),
+                new Variant(5000000L, "avc1.640028,mp4a.40.2", "1920x1080", "variant-1080p.m3u8")
+        ));
         ManifestResponse mockResponse = new ManifestResponse("hls", hlsDetails, null);
         when(manifestAnalyzer.analyzeManifest(anyString())).thenReturn(mockResponse);
 
@@ -66,7 +71,10 @@ class ManifestControllerTest {
     @Test
     void testAnalyzeManifestWithQueryParameters() throws Exception {
         String requestBody = "{\"url\":\"https://example.com/test.m3u8?quality=high&bitrate=1080p\"}";
-        HlsDetails hlsDetails = new HlsDetails(Arrays.asList(1000000L, 2000000L));
+        HlsDetails hlsDetails = new HlsDetails(Arrays.asList(
+                new Variant(1000000L, "avc1.42c01e,mp4a.40.2", "640x360", "variant-360p.m3u8"),
+                new Variant(2000000L, "avc1.42c01f,mp4a.40.2", "1280x720", "variant-720p.m3u8")
+        ));
         ManifestResponse mockResponse = new ManifestResponse("hls", hlsDetails, null);
         when(manifestAnalyzer.analyzeManifest(anyString())).thenReturn(mockResponse);
 

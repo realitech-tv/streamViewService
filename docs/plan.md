@@ -332,6 +332,12 @@ open http://localhost:8080/
 - [x] AR006: Returns JSON matching response.schema.json
 - [x] AR007: GET /health returns 200 with JSON when healthy
 - [x] AR008: Health check returns error code when unhealthy
+- [x] AR009: HLS responses include optional "hls" object
+- [x] AR010: HLS variants array contains objects with bandwidth, codec, resolution, uri
+- [x] AR011: DASH responses include optional "dash" object
+- [x] AR012: Invalid manifests do not include "hls" or "dash" properties
+- [x] AR013: HLS manifests only include "hls" property, not "dash"
+- [x] AR014: DASH manifests only include "dash" property, not "hls"
 
 #### Technical Requirements
 - [x] TR001: Built using Java
@@ -372,29 +378,37 @@ docker rm svs
 
 ### Implementation Steps
 1. Update `ManifestResponse` DTO to include optional `hls` and `dash` objects
-2. Create `HlsDetails` DTO with `variants` property (array of numbers)
-3. Create `DashDetails` DTO for DASH-specific details
-4. Implement HLS variant extraction in `ManifestAnalyzerImpl`
+2. Create `HlsDetails` DTO with `variants` property (array of Variant objects)
+3. Create `Variant` DTO with properties: bandwidth (Long), codec (String), resolution (String), uri (String)
+4. Create `DashDetails` DTO for DASH-specific details
+5. Implement HLS variant extraction in `ManifestAnalyzerImpl`
    - Parse master playlist for #EXT-X-STREAM-INF tags
-   - Extract BANDWIDTH attribute values
-   - Populate variants array with bitrate values
-5. Update service to return `hls` object when streamtype is "hls"
-6. Update service to return `dash` object when streamtype is "dash"
-7. Write unit tests for variant extraction logic
-8. Update integration tests to validate new response structure
-9. Update API documentation with new response fields
+   - Extract BANDWIDTH, CODECS, and RESOLUTION attributes using regex patterns
+   - Extract URI from the line following each #EXT-X-STREAM-INF tag
+   - Create Variant objects and populate variants array
+6. Update service to return `hls` object when streamtype is "hls"
+7. Update service to return `dash` object when streamtype is "dash"
+8. Write unit tests for variant extraction logic
+9. Update integration tests to validate new response structure
+10. Update controller tests to use new Variant constructor with 4 parameters
+11. Add @JsonInclude(NON_NULL) to ManifestResponse to exclude null hls/dash properties
+12. Configure ObjectMapper to handle empty bean serialization for DashDetails
+13. Update API documentation with new response fields
 
 ### Validation Criteria
-- [ ] Response includes "hls" object when streamtype is "hls"
-- [ ] "hls.variants" contains array of bitrate values from manifest
-- [ ] Response includes "dash" object when streamtype is "dash"
-- [ ] Response structure matches updated response.schema.json
-- [ ] AR009: HLS object included for HLS streams
-- [ ] AR010: HLS variants array populated with bitrate levels
-- [ ] AR011: DASH object included for DASH streams
-- [ ] Unit tests validate variant extraction
-- [ ] Integration tests pass with new response structure
-- [ ] API documentation reflects new response schema
+- [x] Response includes "hls" object when streamtype is "hls"
+- [x] "hls.variants" contains array of variant objects with bandwidth, codec, resolution, and uri
+- [x] Response includes "dash" object when streamtype is "dash"
+- [x] Response does not include "hls" or "dash" when streamtype is "invalid" (AR012)
+- [x] Response includes only "hls" property for HLS manifests, not "dash" (AR013)
+- [x] Response includes only "dash" property for DASH manifests, not "hls" (AR014)
+- [x] Response structure matches updated response.schema.json
+- [x] AR009: HLS object included for HLS streams
+- [x] AR010: HLS variants array populated with variant objects (bandwidth, codec, resolution, uri)
+- [x] AR011: DASH object included for DASH streams
+- [x] Unit tests validate variant extraction
+- [x] Integration tests pass with new response structure
+- [x] API documentation reflects new response schema
 
 ### Test Commands
 ```bash
@@ -417,7 +431,26 @@ curl -X POST http://localhost:8080/ -H "Content-Type: application/json" \
 {
   "streamtype": "hls",
   "hls": {
-    "variants": [500000, 1000000, 2000000, 5000000]
+    "variants": [
+      {
+        "bandwidth": 607794,
+        "codec": "avc1.4d401e,mp4a.40.2",
+        "resolution": "640x360",
+        "uri": "chunklist_b607794.m3u8"
+      },
+      {
+        "bandwidth": 1544757,
+        "codec": "avc1.64001f,mp4a.40.2",
+        "resolution": "960x540",
+        "uri": "chunklist_b1544757.m3u8"
+      },
+      {
+        "bandwidth": 2189923,
+        "codec": "avc1.4d401f,mp4a.40.2",
+        "resolution": "1280x720",
+        "uri": "chunklist_b2189923.m3u8"
+      }
+    ]
   }
 }
 ```

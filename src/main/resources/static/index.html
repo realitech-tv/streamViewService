@@ -143,9 +143,40 @@
 
                 if (response.ok) {
                     resultDiv.className = 'result success';
+                    let detailsHtml = '';
+
+                    // Display HLS variants if present
+                    if (data.hls && data.hls.variants) {
+                        detailsHtml += '<div style="margin-top: 15px;"><strong>HLS Variants:</strong></div>';
+                        detailsHtml += '<div style="margin-top: 10px; font-family: monospace; font-size: 12px;">';
+                        data.hls.variants.forEach((variant, index) => {
+                            detailsHtml += `<div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px;">`;
+                            detailsHtml += `<strong>Variant ${index + 1}:</strong><br>`;
+                            detailsHtml += `Bandwidth: ${variant.bandwidth.toLocaleString()} bps<br>`;
+                            if (variant.codec) detailsHtml += `Codec: ${variant.codec}<br>`;
+                            if (variant.resolution) detailsHtml += `Resolution: ${variant.resolution}<br>`;
+                            if (variant.uri) detailsHtml += `URI: ${variant.uri}`;
+                            detailsHtml += `</div>`;
+                        });
+                        detailsHtml += '</div>';
+                    }
+
+                    // Display DASH details if present
+                    if (data.dash) {
+                        detailsHtml += '<div style="margin-top: 15px;"><strong>DASH Details:</strong></div>';
+                        detailsHtml += '<div style="margin-top: 10px; font-family: monospace; font-size: 12px;">';
+                        detailsHtml += JSON.stringify(data.dash, null, 2);
+                        detailsHtml += '</div>';
+                    }
+
+                    // Display raw JSON
+                    detailsHtml += '<div style="margin-top: 20px;"><strong>Complete JSON Response:</strong></div>';
+                    detailsHtml += `<pre style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 12px;">${JSON.stringify(data, null, 2)}</pre>`;
+
                     resultDiv.innerHTML = `
                         <div>Stream type detected:</div>
                         <div class="stream-type">${data.streamtype.toUpperCase()}</div>
+                        ${detailsHtml}
                     `;
                 } else {
                     resultDiv.className = 'result error';
