@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>streamViewService</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .stream-type {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .links {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .links a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>streamViewService</h1>
+        <p class="subtitle">Analyze video stream manifests (HLS and MPEG-DASH)</p>
+
+        <form id="manifestForm">
+            <label for="manifestUrl">Manifest URL:</label>
+            <input
+                type="text"
+                id="manifestUrl"
+                name="url"
+                placeholder="https://example.com/stream/manifest.m3u8"
+                required
+            >
+            <button type="submit">Analyze</button>
+        </form>
+
+        <div id="result" class="result"></div>
+
+        <div class="links">
+            <a href="/apidocs" target="_blank">API Documentation</a>
+            <a href="/health" target="_blank">Health Check</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('manifestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const url = document.getElementById('manifestUrl').value;
+            const resultDiv = document.getElementById('result');
+            const submitButton = e.target.querySelector('button');
+
+            // Disable button during request
+            submitButton.disabled = true;
+            resultDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <div>Stream type detected:</div>
+                        <div class="stream-type">${data.streamtype.toUpperCase()}</div>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.message || 'Failed to analyze manifest'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+            } finally {
+                resultDiv.style.display = 'block';
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

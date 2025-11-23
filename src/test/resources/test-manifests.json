@@ -1,0 +1,61 @@
+{
+  "valid": [
+    {
+      "url": "https://vs-cmaf-push-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_two_hd/pc_hd_abr_v2.mpd",
+      "type": "dash",
+      "description": "BBC two linear stream"
+    },
+    {
+      "url": "https://pub-c4-b8-eqsl-bbc.live.bidi.net.uk/vs-cmaf-push-uk/x=4/i=urn:bbc:pips:service:bbc_news_channel_hd/pc_hd_abr_v2.mpd",
+      "type": "dash",
+      "description": "BBC news linear stream"
+    },
+    {
+      "url": "https://www.radiantmediaplayer.com/media/rmp-segment/bbb-abr-aes/playlist.m3u8",
+      "type": "hls",
+      "description": "Radiant test stream"
+    },
+    {
+      "url": "https://storage.googleapis.com/shaka-demo-assets/sintel-widevine/dash.mpd",
+      "type": "dash",
+      "description": "Shaka test VOD asset"
+    }
+  ],
+  "invalid": [
+    {
+      "url": "https://example.com/video.mp4",
+      "type": "invalid",
+      "description": "Direct video file, not a manifest"
+    },
+    {
+      "url": "https://example.com/manifest.xml",
+      "type": "invalid",
+      "description": "XML file that is not a DASH manifest"
+    },
+    {
+      "url": "not-a-valid-url",
+      "type": "invalid",
+      "description": "Malformed URL"
+    },
+    {
+      "url": "https://example.com/nonexistent.m3u8",
+      "type": "invalid",
+      "description": "URL that returns 404"
+    },
+    {
+      "url": "https://example.com/corrupted.mpd",
+      "type": "invalid",
+      "description": "Malformed DASH manifest"
+    },
+    {
+      "url": "",
+      "type": "invalid",
+      "description": "Empty URL"
+    },
+    {
+      "url": "https://example.com/file.txt",
+      "type": "invalid",
+      "description": "Text file, not a streaming manifest"
+    }
+  ]
+}

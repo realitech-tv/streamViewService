@@ -10,6 +10,8 @@
 - [ ] AR004: A GET request to the endpoint '/apidocs' without any parameters should return documentation about the services available through the API.
 - [ ] AR005: No authentication or authorization shall be needed to call any of the services.
 - [ ] AR006: The service should return a JSON document following the schema "src/main/resources/schemas/response.schema.json".
+- [ ] AR007: A GET request to the endpoint '/health' should return HTTP 200 with a JSON response body describing the service status when the service is running properly.
+- [ ] AR008: The health check endpoint should return an appropriate HTTP error code with a JSON response body describing the service status when the service is not running properly.
 
 # Technical requirements
 - [ ] TR001: The application should be built using Java
