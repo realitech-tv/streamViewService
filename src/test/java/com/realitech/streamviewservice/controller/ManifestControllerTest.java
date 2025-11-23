@@ -1,5 +1,7 @@
 package com.realitech.streamviewservice.controller;
 
+import com.realitech.streamviewservice.dto.HlsDetails;
+import com.realitech.streamviewservice.dto.ManifestResponse;
 import com.realitech.streamviewservice.service.ManifestAnalyzer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -25,14 +29,18 @@ class ManifestControllerTest {
     @Test
     void testAnalyzeManifestWithValidUrl() throws Exception {
         String requestBody = "{\"url\":\"https://example.com/test.m3u8\"}";
-        when(manifestAnalyzer.analyzeManifest(anyString())).thenReturn("hls");
+        HlsDetails hlsDetails = new HlsDetails(Arrays.asList(1000000L, 2000000L, 5000000L));
+        ManifestResponse mockResponse = new ManifestResponse("hls", hlsDetails, null);
+        when(manifestAnalyzer.analyzeManifest(anyString())).thenReturn(mockResponse);
 
         mockMvc.perform(post("/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.streamtype").value("hls"));
+                .andExpect(jsonPath("$.streamtype").value("hls"))
+                .andExpect(jsonPath("$.hls").exists())
+                .andExpect(jsonPath("$.hls.variants").isArray());
     }
 
     @Test
@@ -58,7 +66,9 @@ class ManifestControllerTest {
     @Test
     void testAnalyzeManifestWithQueryParameters() throws Exception {
         String requestBody = "{\"url\":\"https://example.com/test.m3u8?quality=high&bitrate=1080p\"}";
-        when(manifestAnalyzer.analyzeManifest(anyString())).thenReturn("hls");
+        HlsDetails hlsDetails = new HlsDetails(Arrays.asList(1000000L, 2000000L));
+        ManifestResponse mockResponse = new ManifestResponse("hls", hlsDetails, null);
+        when(manifestAnalyzer.analyzeManifest(anyString())).thenReturn(mockResponse);
 
         mockMvc.perform(post("/")
                 .contentType(MediaType.APPLICATION_JSON)

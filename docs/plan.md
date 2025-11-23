@@ -362,6 +362,68 @@ docker rm svs
 
 ---
 
+## Iteration 11: HLS Variants & DASH Details Extraction
+
+### Objectives
+- Extract bitrate information from HLS manifests
+- Return "hls" object with "variants" array
+- Return "dash" object for DASH streams
+- Update response structure to match new schema
+
+### Implementation Steps
+1. Update `ManifestResponse` DTO to include optional `hls` and `dash` objects
+2. Create `HlsDetails` DTO with `variants` property (array of numbers)
+3. Create `DashDetails` DTO for DASH-specific details
+4. Implement HLS variant extraction in `ManifestAnalyzerImpl`
+   - Parse master playlist for #EXT-X-STREAM-INF tags
+   - Extract BANDWIDTH attribute values
+   - Populate variants array with bitrate values
+5. Update service to return `hls` object when streamtype is "hls"
+6. Update service to return `dash` object when streamtype is "dash"
+7. Write unit tests for variant extraction logic
+8. Update integration tests to validate new response structure
+9. Update API documentation with new response fields
+
+### Validation Criteria
+- [ ] Response includes "hls" object when streamtype is "hls"
+- [ ] "hls.variants" contains array of bitrate values from manifest
+- [ ] Response includes "dash" object when streamtype is "dash"
+- [ ] Response structure matches updated response.schema.json
+- [ ] AR009: HLS object included for HLS streams
+- [ ] AR010: HLS variants array populated with bitrate levels
+- [ ] AR011: DASH object included for DASH streams
+- [ ] Unit tests validate variant extraction
+- [ ] Integration tests pass with new response structure
+- [ ] API documentation reflects new response schema
+
+### Test Commands
+```bash
+mvn clean test
+mvn spring-boot:run
+
+# Test HLS with variants
+curl -X POST http://localhost:8080/ -H "Content-Type: application/json" \
+  -d '{"url":"https://www.radiantmediaplayer.com/media/rmp-segment/bbb-abr-aes/playlist.m3u8"}' | jq
+
+# Test DASH
+curl -X POST http://localhost:8080/ -H "Content-Type: application/json" \
+  -d '{"url":"https://storage.googleapis.com/shaka-demo-assets/sintel-widevine/dash.mpd"}' | jq
+
+# Verify response structure matches schema
+```
+
+### Expected Response Example
+```json
+{
+  "streamtype": "hls",
+  "hls": {
+    "variants": [500000, 1000000, 2000000, 5000000]
+  }
+}
+```
+
+---
+
 ## Summary
 
 This incremental plan ensures that:

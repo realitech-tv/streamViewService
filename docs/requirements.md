@@ -12,6 +12,12 @@
 - [ ] AR006: The service should return a JSON document following the schema "src/main/resources/schemas/response.schema.json".
 - [ ] AR007: A GET request to the endpoint '/health' should return HTTP 200 with a JSON response body describing the service status when the service is running properly.
 - [ ] AR008: The health check endpoint should return an appropriate HTTP error code with a JSON response body describing the service status when the service is not running properly.
+- [ ] AR009: When streamtype is "hls", the response may include an optional "hls" object containing HLS-specific stream details.
+- [ ] AR010: The "hls" object may contain a "variants" property with an array of bitrate levels (in bits per second) available in the manifest.
+- [ ] AR011: When streamtype is "dash", the response may include an optional "dash" object containing DASH-specific stream details.
+- [ ] AR012: When the manifest is not a valid HLS or MPEG-DASH manifest (streamtype is "invalid"), the JSON response shall not include the "hls" or "dash" properties.
+- [ ] AR013: When the manifest is a valid HLS manifest (streamtype is "hls"), the JSON response shall include the "hls" property and shall not include the "dash" property.
+- [ ] AR014: When the manifest is a valid MPEG-DASH manifest (streamtype is "dash"), the JSON response shall include the "dash" property and shall not include the "hls" property.
 
 # Technical requirements
 - [ ] TR001: The application should be built using Java

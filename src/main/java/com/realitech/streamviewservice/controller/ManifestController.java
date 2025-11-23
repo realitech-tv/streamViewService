@@ -20,8 +20,7 @@ public class ManifestController {
 
     @PostMapping("/")
     public ResponseEntity<ManifestResponse> analyzeManifest(@Valid @RequestBody ManifestRequest request) {
-        String streamType = manifestAnalyzer.analyzeManifest(request.getUrl());
-        ManifestResponse response = new ManifestResponse(streamType);
+        ManifestResponse response = manifestAnalyzer.analyzeManifest(request.getUrl());
         return ResponseEntity.ok(response);
     }
 }

@@ -8,6 +8,23 @@
       "type": "string",
       "enum": ["hls", "dash", "invalid"],
       "description": "The type of the stream"
+    },
+    "hls": {
+      "type": "object",
+      "properties": {
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "List of bitrate levels from the manifest"
+        }
+      },
+      "description": "HLS stream details (to be completed)"
+    },
+    "dash": {
+      "type": "object",
+      "description": "DASH stream details (to be completed)"
     }
   },
   "required": ["streamtype"]

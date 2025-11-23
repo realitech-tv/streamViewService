@@ -1,11 +1,13 @@
 package com.realitech.streamviewservice.service;
 
+import com.realitech.streamviewservice.dto.ManifestResponse;
+
 public interface ManifestAnalyzer {
 
     /**
-     * Analyzes a manifest URL and returns the stream type
+     * Analyzes a manifest URL and returns detailed manifest information
      * @param url The manifest URL to analyze
-     * @return "hls", "dash", or "invalid"
+     * @return ManifestResponse with streamtype and stream-specific details
      */
-    String analyzeManifest(String url);
+    ManifestResponse analyzeManifest(String url);
 }
